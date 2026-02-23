@@ -35,20 +35,36 @@ export function useEvents() {
     async (opts?: { sender?: string; cursor?: EventId | null; limit?: number }) => {
       setLoading(true);
       try {
-        const result = await client.queryEvents({
-          query: { MoveEventType: EVENT_TYPES.BetPlaced },
-          order: 'descending',
-          cursor: opts?.cursor ?? undefined,
-          limit: opts?.limit ?? 50,
-        });
-        let events = result.data;
-        if (opts?.sender) {
-          events = events.filter((e: SuiEvent) => {
-            const parsed = e.parsedJson as Record<string, unknown>;
-            return parsed.user === opts.sender;
+        const targetCount = opts?.limit ?? 50;
+        let allEvents: SuiEvent[] = [];
+        let nextCursor: EventId | null | undefined = opts?.cursor ?? undefined;
+        let hasNextPage = true;
+
+        // Keep paginating until we have enough user events or no more pages
+        while (allEvents.length < targetCount && hasNextPage) {
+          const result = await client.queryEvents({
+            query: { MoveEventType: EVENT_TYPES.BetPlaced },
+            order: 'descending',
+            cursor: nextCursor ?? undefined,
+            limit: 100,
           });
+          let events = result.data;
+          if (opts?.sender) {
+            events = events.filter((e: SuiEvent) => {
+              const parsed = e.parsedJson as Record<string, unknown>;
+              return parsed.user === opts.sender;
+            });
+          }
+          allEvents = [...allEvents, ...events];
+          nextCursor = result.nextCursor ?? null;
+          hasNextPage = result.hasNextPage;
         }
-        return { events, nextCursor: result.nextCursor, hasNextPage: result.hasNextPage };
+
+        return {
+          events: allEvents.slice(0, targetCount),
+          nextCursor,
+          hasNextPage,
+        };
       } finally {
         setLoading(false);
       }
