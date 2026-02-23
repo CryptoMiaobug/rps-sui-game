@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
-import { USDC_PACKAGE_ID, USDC_TREASURY_CAP, USDC_UNIT } from '../constants';
+import { FAUCET_PACKAGE_ID, FAUCET_OBJECT_ID, CLOCK_ID } from '../constants';
 import { useUsdcBalance } from '../hooks/useUsdcBalance';
 
 export function MintUsdcButton() {
@@ -14,18 +14,16 @@ export function MintUsdcButton() {
 
   if (!account) return null;
 
-  const handleMint = async () => {
+  const handleClaim = async () => {
     setLoading(true);
     setMsg('');
     try {
-      const amount = 1000 * USDC_UNIT; // 1000 USDC
       const tx = new Transaction();
       tx.moveCall({
-        target: `${USDC_PACKAGE_ID}::usdc::mint`,
+        target: `${FAUCET_PACKAGE_ID}::faucet::claim`,
         arguments: [
-          tx.object(USDC_TREASURY_CAP),
-          tx.pure.u64(amount),
-          tx.pure.address(account.address),
+          tx.object(FAUCET_OBJECT_ID),
+          tx.object(CLOCK_ID),
         ],
       });
 
@@ -35,16 +33,16 @@ export function MintUsdcButton() {
           onSuccess: async (result) => {
             await client.waitForTransaction({ digest: result.digest });
             refetch();
-            setMsg('✅ 领取成功！+1000 USDC');
+            setMsg('✅ 领取成功！+10,000 USDC');
           },
         }
       );
     } catch (e: unknown) {
       const errMsg = e instanceof Error ? e.message : String(e);
-      if (errMsg.includes('ObjectNotFound') || errMsg.includes('not owned')) {
-        setMsg('❌ 仅限管理员钱包铸造');
+      if (errMsg.includes('24') || errMsg.includes('cooldown') || errMsg.includes('already')) {
+        setMsg('⏰ 24小时内已领取，请稍后再试');
       } else {
-        setMsg(`❌ 失败: ${errMsg.slice(0, 60)}`);
+        setMsg(`❌ ${errMsg.slice(0, 80)}`);
       }
     } finally {
       setLoading(false);
@@ -54,11 +52,11 @@ export function MintUsdcButton() {
   return (
     <div className="flex flex-col items-center gap-1">
       <button
-        onClick={handleMint}
+        onClick={handleClaim}
         disabled={loading}
         className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50 transition-colors"
       >
-        {loading ? '铸造中...' : '🪙 领取测试 USDC'}
+        {loading ? '领取中...' : '🪙 领取测试 USDC'}
       </button>
       {msg && <span className="text-xs">{msg}</span>}
     </div>
