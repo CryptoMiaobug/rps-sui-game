@@ -32,7 +32,7 @@ export function HomePage() {
 
   // Check betting window
   const now = Date.now();
-  const isBettingOpen = gameState && roundState
+  const isBettingOpen = gameState
     ? now < gameState.current_target_ms - gameState.buffer_ms && !gameState.is_paused
     : false;
 
