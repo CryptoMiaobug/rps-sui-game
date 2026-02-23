@@ -3,14 +3,16 @@ import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from '@
 import { Transaction } from '@mysten/sui/transactions';
 import { PACKAGE_ID, GAME_ID, USDC_TYPE, USDC_UNIT, CLOCK_ID, CHOICE_LABELS } from '../constants';
 import { getReferrer } from '../utils';
+import type { UserBets } from '../hooks/useUserBets';
 
 interface Props {
   minBet: number;
   maxBet: number;
   isBettingOpen: boolean;
+  userBets?: UserBets | null;
 }
 
-export function BetPanel({ minBet, maxBet, isBettingOpen }: Props) {
+export function BetPanel({ minBet, maxBet, isBettingOpen, userBets }: Props) {
   const account = useCurrentAccount();
   const client = useSuiClient();
   const { mutateAsync: signAndExecute, isPending } = useSignAndExecuteTransaction();
@@ -21,6 +23,11 @@ export function BetPanel({ minBet, maxBet, isBettingOpen }: Props) {
 
   const minBetUsdc = minBet / USDC_UNIT;
   const maxBetUsdc = maxBet > 0 ? maxBet / USDC_UNIT : 0;
+
+  // Determine if user already bet on a choice this round
+  const existingChoice = userBets
+    ? userBets.rock_shares > 0 ? 0 : userBets.paper_shares > 0 ? 1 : userBets.scissors_shares > 0 ? 2 : null
+    : null;
 
   const handleBet = async () => {
     setError('');
@@ -113,22 +120,32 @@ export function BetPanel({ minBet, maxBet, isBettingOpen }: Props) {
     <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4 animate-slide-up">
       <h3 className="mb-3 text-base font-semibold">选择出拳</h3>
       <div className="mb-4 grid grid-cols-3 gap-3">
-        {choices.map(c => (
-          <button
-            key={c.value}
-            onClick={() => setChoice(c.value)}
-            disabled={!isBettingOpen}
-            className={`flex flex-col items-center gap-1 rounded-xl border-2 p-4 transition-all
-              ${choice === c.value
-                ? 'border-[var(--accent)] bg-[var(--accent)]/10 animate-pulse-glow'
-                : 'border-[var(--border)] hover:border-[var(--accent)]/50'}
-              ${!isBettingOpen ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-          >
-            <span className="text-3xl">{c.label}</span>
-            <span className="text-sm">{c.name}</span>
-          </button>
-        ))}
+        {choices.map(c => {
+          const locked = existingChoice !== null && existingChoice !== c.value;
+          return (
+            <button
+              key={c.value}
+              onClick={() => !locked && setChoice(c.value)}
+              disabled={!isBettingOpen || locked}
+              className={`flex flex-col items-center gap-1 rounded-xl border-2 p-4 transition-all
+                ${choice === c.value || existingChoice === c.value
+                  ? 'border-[var(--accent)] bg-[var(--accent)]/10 animate-pulse-glow'
+                  : locked
+                    ? 'border-[var(--border)] opacity-30 cursor-not-allowed'
+                    : 'border-[var(--border)] hover:border-[var(--accent)]/50'}
+                ${!isBettingOpen ? 'opacity-50 cursor-not-allowed' : locked ? '' : 'cursor-pointer'}`}
+            >
+              <span className="text-3xl">{c.label}</span>
+              <span className="text-sm">{c.name}</span>
+            </button>
+          );
+        })}
       </div>
+      {existingChoice !== null && (
+        <div className="mb-3 text-xs text-[var(--yellow)]">
+          ⚠️ 本轮已下注 {CHOICE_LABELS[existingChoice]}，只能加注同一选择
+        </div>
+      )}
 
       <h3 className="mb-2 text-base font-semibold">下注金额 (USDC)</h3>
       <div className="mb-3 flex gap-2">

@@ -59,6 +59,7 @@ export function HomePage() {
         minBet={gameState.min_bet}
         maxBet={gameState.max_bet}
         isBettingOpen={isBettingOpen}
+        userBets={userBets}
       />
 
       {account && playerStats && (
