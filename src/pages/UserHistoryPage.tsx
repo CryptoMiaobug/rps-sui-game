@@ -119,6 +119,7 @@ export function UserHistoryPage() {
           const totalWagered = roundBets.reduce((s, b) => s + BigInt(b.amount), 0n);
           const hasPayout = payout !== undefined;
           const claimState = claimStatus[roundMs];
+          const isCurrentRound = Number(roundMs) > Date.now();
 
           return (
             <div key={roundMs} className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-3">
@@ -127,7 +128,9 @@ export function UserHistoryPage() {
                   {formatTimestamp(Number(roundMs))}
                 </span>
                 <div className="flex items-center gap-2">
-                  {hasPayout ? (
+                  {isCurrentRound ? (
+                    <span className="text-xs text-[var(--yellow)]">⏳ 进行中</span>
+                  ) : hasPayout ? (
                     <span className="text-xs text-[var(--green)]">✅ 已领取</span>
                   ) : claimState === 'claimed' ? (
                     <span className="text-xs text-[var(--green)]">✅ 已领取</span>
