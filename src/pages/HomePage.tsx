@@ -61,7 +61,13 @@ export function HomePage() {
         isBettingOpen={isBettingOpen}
       />
 
-      {account && playerStats && <PlayerStatsCard stats={playerStats} />}
+      {account && playerStats && (
+        <PlayerStatsCard
+          stats={playerStats}
+          currentRoundWagered={roundState && !roundState.is_revealed ? userBets?.total_wagered : undefined}
+          isCurrentRoundPending={!!roundState && !roundState.is_revealed}
+        />
+      )}
 
       <ProjectStatsCard game={gameState} />
 
