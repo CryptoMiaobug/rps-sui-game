@@ -25,7 +25,8 @@ export function BetPanel({ minBet, maxBet, isBettingOpen }: Props) {
   const handleBet = async () => {
     setError('');
     setSuccess('');
-    if (choice === null) { setError('请选择石头、布或剪刀'); return; }
+    if (choice === null) { setError('请先选择石头、布或剪刀'); return; }
+    if (!amount || amount === '0') { setError('请输入下注金额'); return; }
     if (!account) { setError('请先连接钱包'); return; }
 
     const amountNum = Number(amount);
@@ -156,7 +157,7 @@ export function BetPanel({ minBet, maxBet, isBettingOpen }: Props) {
       ) : (
         <button
           onClick={handleBet}
-          disabled={!isBettingOpen || isPending || choice === null}
+          disabled={!isBettingOpen || isPending}
           className={`w-full rounded-xl py-3 font-semibold text-white transition-all
             ${isBettingOpen && !isPending
               ? 'bg-[var(--accent)] hover:bg-[var(--accent-hover)] active:scale-[0.98]'
