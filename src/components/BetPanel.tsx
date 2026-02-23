@@ -28,9 +28,13 @@ export function BetPanel({ minBet, maxBet, isBettingOpen }: Props) {
     if (choice === null) { setError('请选择石头、布或剪刀'); return; }
     if (!account) { setError('请先连接钱包'); return; }
 
-    const amountNum = parseInt(amount);
+    const amountNum = Number(amount);
     if (isNaN(amountNum) || amountNum < minBetUsdc) {
       setError(`最小下注 ${minBetUsdc} USDC`);
+      return;
+    }
+    if (!Number.isInteger(amountNum)) {
+      setError('下注金额必须为整数 USDC');
       return;
     }
     if (maxBetUsdc > 0 && amountNum > maxBetUsdc) {
