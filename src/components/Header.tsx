@@ -1,5 +1,6 @@
 import { ConnectButton, useCurrentAccount } from '@mysten/dapp-kit';
 import { useUsdcBalance } from '../hooks/useUsdcBalance';
+import { MintUsdcButton } from './MintUsdcButton';
 import { formatUsdc, shortenAddress } from '../utils';
 
 export function Header() {
@@ -17,10 +18,13 @@ export function Header() {
         </div>
         <div className="flex items-center gap-3">
           {account && (
-            <div className="hidden sm:flex items-center gap-2 rounded-lg bg-[var(--bg-card)] px-3 py-1.5 text-sm">
-              <span className="text-[var(--text-secondary)]">{shortenAddress(account.address)}</span>
-              <span className="text-[var(--green)]">{formatUsdc(balance)} USDC</span>
-            </div>
+            <>
+              <div className="hidden sm:flex items-center gap-2 rounded-lg bg-[var(--bg-card)] px-3 py-1.5 text-sm">
+                <span className="text-[var(--text-secondary)]">{shortenAddress(account.address)}</span>
+                <span className="text-[var(--green)]">{formatUsdc(balance)} USDC</span>
+              </div>
+              <MintUsdcButton />
+            </>
           )}
           <ConnectButton />
         </div>
