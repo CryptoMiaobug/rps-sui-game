@@ -7,6 +7,7 @@ import { Header } from './components/Header';
 import { HomePage } from './pages/HomePage';
 import { UserHistoryPage } from './pages/UserHistoryPage';
 import { ProjectHistoryPage } from './pages/ProjectHistoryPage';
+import { LeaderboardPage } from './pages/LeaderboardPage';
 import { setReferrer } from './utils';
 import '@mysten/dapp-kit/dist/index.css';
 
@@ -44,6 +45,7 @@ export default function App() {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/history/user" element={<UserHistoryPage />} />
                   <Route path="/history/project" element={<ProjectHistoryPage />} />
+                  <Route path="/leaderboard" element={<LeaderboardPage />} />
                 </Routes>
               </main>
             </div>

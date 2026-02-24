@@ -8,6 +8,7 @@ import { BetPanel } from '../components/BetPanel';
 import { RoundStatus } from '../components/RoundStatus';
 import { PlayerStatsCard } from '../components/PlayerStatsCard';
 import { ProjectStatsCard } from '../components/ProjectStatsCard';
+import { ReferralCard } from '../components/ReferralCard';
 import { RevealAnimation } from '../components/RevealAnimation';
 
 export function HomePage() {
@@ -75,6 +76,8 @@ export function HomePage() {
           isCurrentRoundPending={!!roundState && !roundState.is_revealed}
         />
       )}
+
+      {account && <ReferralCard />}
 
       <ProjectStatsCard game={gameState} />
 

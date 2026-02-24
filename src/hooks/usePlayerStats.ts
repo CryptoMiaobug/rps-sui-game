@@ -9,7 +9,6 @@ export interface PlayerStats {
   tie_count: number;
   current_streak: number;
   max_streak: number;
-  referral_earnings: string;
 }
 
 function parsePlayerStatsFields(fields: Record<string, unknown>): PlayerStats {
@@ -23,7 +22,6 @@ function parsePlayerStatsFields(fields: Record<string, unknown>): PlayerStats {
     tie_count: Number(f.tie_count),
     current_streak: Number(f.current_streak),
     max_streak: Number(f.max_streak),
-    referral_earnings: String(f.referral_earnings || '0'),
   };
 }
 
