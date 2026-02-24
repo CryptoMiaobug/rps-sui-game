@@ -1,8 +1,8 @@
 export const PACKAGE_ID = '0xc7e951cbcbc162a2fb8e3ff3b073f000db17f83e2d2d4ae5a4cd4942b0801a22';
-export const GAME_ID = '0xd3e205118960c303c5630a24ba1ccd6214400e6ab99c36bdb8e130fd5b8ac58b';
-export const USDC_TYPE = '0xa9ab0f9ab0b2713ee7e1730dceca0768954e5ea2450b57e25a3c7115ad65a41b::usdc::USDC';
-export const FAUCET_PACKAGE_ID = '0x7844cc910a7a94bb08c2119ac164863f7989bece1bb3382b4dd2bcfd7370fd26';
-export const FAUCET_OBJECT_ID = '0x72d4743f8a204db8376ffb64ccc5c14349b159cac34d6d27f43a6a99d81ae906';
+export const GAME_ID = '0xad73456a5d62f4e80a7d9661e82ef5f8e4786a4fa659486c69e85c5680a7660e';
+export const USDC_TYPE = '0x8734cfd80b09d058d1596a8f282a769e42f9602d3db791238caf5b3254be1a05::usdc::USDC';
+export const FAUCET_PACKAGE_ID = '0x83e481f8ce48a01ab76deea92224922d1557317be8a2cfc01389c33212ef2291';
+export const FAUCET_OBJECT_ID = '0x8c56f083719057be2499a943d596b8ccdc3f5cefcf77aac1eff37b1b11715214';
 export const USDC_DECIMALS = 6;
 export const USDC_UNIT = 1_000_000; // 10^6
 export const SUI_NETWORK = 'testnet';

@@ -61,7 +61,7 @@ export function MintUsdcButton() {
             refetch();
             localStorage.setItem(COOLDOWN_KEY, String(Date.now()));
             setRemaining(COOLDOWN_MS);
-            setMsg('✅ 领取成功！');
+            setMsg('✅ 领取成功！+50 USDC');
           },
         }
       );
