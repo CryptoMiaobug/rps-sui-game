@@ -55,7 +55,7 @@ export function GuideCard() {
           <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-xs font-bold text-blue-400">4</span>
           <div>
             <span className="text-[var(--text-primary)] font-medium">开奖 & 赔付</span>
-            <span className="ml-1">— 每小时整点自动开奖，系统随机出拳。赢 ×1.98 / 平 ×0.98 / 输归零，奖金自动发放</span>
+            <span className="ml-1">— 每小时整点自动开奖，系统随机出拳，奖金自动发放</span>
           </div>
         </div>
 
