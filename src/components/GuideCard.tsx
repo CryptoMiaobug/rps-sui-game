@@ -31,7 +31,7 @@ export function GuideCard() {
           <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-xs font-bold text-blue-400">1</span>
           <div>
             <span className="text-[var(--text-primary)] font-medium">连接钱包</span>
-            <span className="ml-1">— 点击右上角「Connect Wallet」连接 Sui 钱包</span>
+            <span className="ml-1">— 点击右上角「Connect Wallet」连接 Sui 钱包（注意切换到测试网 Testnet）</span>
           </div>
         </div>
 
@@ -69,6 +69,10 @@ export function GuideCard() {
       </div>
 
       <div className="mt-3 rounded-lg bg-[var(--bg-secondary)] p-2.5 text-xs text-[var(--text-secondary)]">
+        🔗 本游戏完全运行在 Sui 区块链上，所有下注、开奖、赔付均由智能合约自动执行，开奖结果由链上随机数生成，任何人（包括项目方）无法预测或篡改。每笔交易公开透明，可随时在链上验证。
+      </div>
+
+      <div className="mt-2 rounded-lg bg-[var(--bg-secondary)] p-2.5 text-xs text-[var(--text-secondary)]">
         ⚠️ 当前为 Sui Testnet 测试版，所有代币无真实价值。玩得开心就好！
       </div>
     </div>
