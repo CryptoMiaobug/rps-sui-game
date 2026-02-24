@@ -25,9 +25,7 @@ export function BetPanel({ minBet, maxBet, isBettingOpen, userBets }: Props) {
   const maxBetUsdc = maxBet > 0 ? maxBet / USDC_UNIT : 0;
 
   // Determine if user already bet on a choice this round
-  const existingChoice = userBets
-    ? userBets.rock_shares > 0 ? 0 : userBets.paper_shares > 0 ? 1 : userBets.scissors_shares > 0 ? 2 : null
-    : null;
+  const existingChoice = userBets ? userBets.choice : null;
 
   const handleBet = async () => {
     setError('');

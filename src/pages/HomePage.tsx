@@ -66,7 +66,7 @@ export function HomePage() {
       {account && playerStats && (
         <PlayerStatsCard
           stats={playerStats}
-          currentRoundWagered={roundState && !roundState.is_revealed ? userBets?.total_wagered : undefined}
+          currentRoundWagered={roundState && !roundState.is_revealed ? userBets?.amount : undefined}
           isCurrentRoundPending={!!roundState && !roundState.is_revealed}
         />
       )}
