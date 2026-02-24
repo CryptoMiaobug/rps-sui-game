@@ -1,17 +1,28 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useReferral, type LeaderboardEntry } from '../hooks/useReferral';
+import { useSuiNS } from '../hooks/useSuiNS';
 import { formatUsdc } from '../utils';
 
 export function LeaderboardPage() {
   const { getLeaderboard, loading } = useReferral();
+  const { resolveNames } = useSuiNS();
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
+  const [nameMap, setNameMap] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
-    getLeaderboard().then(setEntries);
+    getLeaderboard().then(async (data) => {
+      setEntries(data);
+      const names = await resolveNames(data.map(e => e.address));
+      setNameMap(names);
+    });
   }, []);
 
-  const shortAddr = (addr: string) => `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  const displayAddr = (addr: string) => {
+    const name = nameMap.get(addr);
+    if (name) return name;
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  };
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-4">
@@ -39,7 +50,7 @@ export function LeaderboardPage() {
               {idx + 1}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium truncate">{shortAddr(entry.address)}</div>
+              <div className="text-sm font-medium truncate">{displayAddr(entry.address)}</div>
             </div>
             <div className="text-right">
               <div className="text-sm font-medium">{entry.inviteCount} 人</div>

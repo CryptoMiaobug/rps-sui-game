@@ -1,4 +1,4 @@
-import { USDC_UNIT } from '../constants';
+import { USDC_UNIT, GAME_ID } from '../constants';
 
 export function formatUsdc(raw: bigint | number | string): string {
   const n = typeof raw === 'bigint' ? raw : BigInt(raw);
@@ -38,6 +38,25 @@ export function getReferrer(): string | null {
 export function setReferrer(addr: string) {
   if (!localStorage.getItem('rps_sui_referral')) {
     localStorage.setItem('rps_sui_referral', addr);
+  }
+}
+
+export async function resolveReferralCode(client: any, code: string): Promise<string | null> {
+  try {
+    const game = await client.getObject({ id: GAME_ID, options: { showContent: true } });
+    const fields = (game.data?.content as any)?.fields;
+    if (!fields?.referral_codes?.fields?.id?.id) return null;
+    const tableId = fields.referral_codes.fields.id.id;
+    const result = await client.getDynamicFieldObject({
+      parentId: tableId,
+      name: { type: '0x0000000000000000000000000000000000000000000000000000000000000001::string::String', value: code },
+    });
+    if (result.data?.content) {
+      return (result.data.content as any).fields?.value || null;
+    }
+    return null;
+  } catch {
+    return null;
   }
 }
 

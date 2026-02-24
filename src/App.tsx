@@ -8,7 +8,7 @@ import { HomePage } from './pages/HomePage';
 import { UserHistoryPage } from './pages/UserHistoryPage';
 import { ProjectHistoryPage } from './pages/ProjectHistoryPage';
 import { LeaderboardPage } from './pages/LeaderboardPage';
-import { setReferrer } from './utils';
+import { setReferrer, resolveReferralCode } from './utils';
 import '@mysten/dapp-kit/dist/index.css';
 
 const queryClient = new QueryClient();
@@ -20,12 +20,21 @@ const { networkConfig } = createNetworkConfig({
   },
 });
 
+import { useSuiClient } from '@mysten/dapp-kit';
+
 function ReferralHandler() {
+  const client = useSuiClient();
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const ref = params.get('ref');
-    if (ref && ref.startsWith('0x')) {
+    if (!ref) return;
+    if (ref.startsWith('0x')) {
       setReferrer(ref);
+    } else {
+      // Short code — resolve from chain
+      resolveReferralCode(client, ref).then(addr => {
+        if (addr) setReferrer(addr);
+      });
     }
   }, []);
   return null;
