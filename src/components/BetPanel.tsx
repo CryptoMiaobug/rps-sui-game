@@ -55,9 +55,29 @@ export function BetPanel({ minBet, maxBet, isBettingOpen, userBets, remainingCap
     }
 
     const amountRaw = BigInt(amountNum) * BigInt(USDC_UNIT);
-    const referrer = getReferrer();
+    let referrer = getReferrer();
 
     try {
+      // Validate referrer: must exist in player_stats, otherwise fallback to no referral
+      if (referrer) {
+        try {
+          const game = await client.getObject({ id: GAME_ID, options: { showContent: true } });
+          const fields = (game.data?.content as any)?.fields;
+          const statsTableId = fields?.player_stats?.fields?.id?.id;
+          if (statsTableId) {
+            await client.getDynamicFieldObject({
+              parentId: statsTableId,
+              name: { type: 'address', value: referrer },
+            });
+          } else {
+            referrer = null;
+          }
+        } catch {
+          // Referrer not in player_stats, fallback to normal bet
+          referrer = null;
+        }
+      }
+
       // Get USDC coins and check balance
       const coins = await client.getCoins({ owner: account.address, coinType: USDC_TYPE });
       if (!coins.data.length) { setError('没有 USDC 代币'); return; }
