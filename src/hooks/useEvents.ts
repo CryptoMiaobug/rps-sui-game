@@ -8,7 +8,6 @@ export interface BetPlacedEvent {
   round_target_ms: string;
   choice: number;
   amount: string;
-  shares: string;
   referrer: string | null;
 }
 
@@ -16,9 +15,8 @@ export interface RoundRevealedEvent {
   round_target_ms: string;
   system_choice: number;
   next_target_ms: string;
-  rock_total: string;
-  paper_total: string;
-  scissors_total: string;
+  total_wagered: string;
+  player_count: string;
 }
 
 export interface PayoutEvent {

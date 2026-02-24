@@ -22,10 +22,10 @@ export function ProjectStatsCard({ game }: Props) {
         <StatItem label="总轮数" value={String(game.total_rounds)} />
         <StatItem label="总交易量" value={`${formatUsdc(game.total_volume)} USDC`} />
         <StatItem label="总用户数" value={String(game.total_users)} />
-        <StatItem label="国库余额" value={`${formatUsdc(game.treasury)} USDC`} />
+        <StatItem label="资金池" value={`${formatUsdc(game.vault)} USDC`} />
         <StatItem label="手续费率" value={`${(game.fee_bps / 100).toFixed(1)}%`} />
+        <StatItem label="单轮上限" value={`${formatUsdc(game.bet_cap)} USDC`} />
         <StatItem label="轮次时长" value={`${game.round_duration_ms / 60000} 分钟`} />
-        <StatItem label="封盘时间" value={`${game.buffer_ms / 60000} 分钟`} />
         <StatItem label="状态" value={game.is_paused ? '⏸ 暂停' : '▶ 运行中'} />
       </div>
     </div>

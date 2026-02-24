@@ -1,5 +1,5 @@
-export const PACKAGE_ID = '0x403704dba69499bb153c88e37fe93bcd24e9869bad076f70c707fa542234704c';
-export const GAME_ID = '0x0bd12c391ab20f73da1b9e1f54a44ceda5392af4ef2b114eb43dbbae79a9ff2f';
+export const PACKAGE_ID = '0xc7e951cbcbc162a2fb8e3ff3b073f000db17f83e2d2d4ae5a4cd4942b0801a22';
+export const GAME_ID = '0xd3e205118960c303c5630a24ba1ccd6214400e6ab99c36bdb8e130fd5b8ac58b';
 export const USDC_TYPE = '0xa9ab0f9ab0b2713ee7e1730dceca0768954e5ea2450b57e25a3c7115ad65a41b::usdc::USDC';
 export const FAUCET_PACKAGE_ID = '0x7844cc910a7a94bb08c2119ac164863f7989bece1bb3382b4dd2bcfd7370fd26';
 export const FAUCET_OBJECT_ID = '0x72d4743f8a204db8376ffb64ccc5c14349b159cac34d6d27f43a6a99d81ae906';

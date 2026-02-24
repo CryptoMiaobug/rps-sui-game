@@ -50,6 +50,7 @@ export function HomePage() {
         <RoundStatus
           round={roundState}
           bufferMs={gameState.buffer_ms}
+          betCap={gameState.bet_cap}
           userBets={userBets}
           userAddress={account?.address}
         />

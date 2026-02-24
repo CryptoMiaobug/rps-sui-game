@@ -1,26 +1,16 @@
 import { useSuiClientQuery } from '@mysten/dapp-kit';
 
 export interface UserBets {
-  rock_shares: number;
-  paper_shares: number;
-  scissors_shares: number;
-  rock_amount: string;
-  paper_amount: string;
-  scissors_amount: string;
-  total_wagered: string;
+  choice: number;
+  amount: string;
   claimed: boolean;
 }
 
 function parseUserBetsFields(fields: Record<string, unknown>): UserBets {
   const f = fields as Record<string, unknown>;
   return {
-    rock_shares: Number(f.rock_shares),
-    paper_shares: Number(f.paper_shares),
-    scissors_shares: Number(f.scissors_shares),
-    rock_amount: String(f.rock_amount || '0'),
-    paper_amount: String(f.paper_amount || '0'),
-    scissors_amount: String(f.scissors_amount || '0'),
-    total_wagered: String(f.total_wagered || '0'),
+    choice: Number(f.choice),
+    amount: String(f.amount || '0'),
     claimed: Boolean(f.claimed),
   };
 }
@@ -45,7 +35,6 @@ export function useUserBets(userBetsTableId: string | undefined, userAddress: st
     if (valueFields) {
       userBets = parseUserBetsFields(valueFields);
     } else {
-      // Sometimes the fields are directly on outerFields (no wrapper)
       userBets = parseUserBetsFields(outerFields);
     }
   }

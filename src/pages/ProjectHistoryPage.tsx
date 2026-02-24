@@ -2,15 +2,14 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useEvents } from '../hooks/useEvents';
 import { CHOICE_LABELS } from '../constants';
-import { formatTimestamp } from '../utils';
+import { formatTimestamp, formatUsdc } from '../utils';
 import type { SuiEvent, EventId } from '@mysten/sui/jsonRpc';
 
 interface RoundRow {
   roundTargetMs: string;
   systemChoice: number;
-  rockTotal: string;
-  paperTotal: string;
-  scissorsTotal: string;
+  totalWagered: string;
+  playerCount: string;
   timestamp: string;
 }
 
@@ -27,9 +26,8 @@ export function ProjectHistoryPage() {
       return {
         roundTargetMs: String(p.round_target_ms),
         systemChoice: Number(p.system_choice),
-        rockTotal: String(p.rock_total),
-        paperTotal: String(p.paper_total),
-        scissorsTotal: String(p.scissors_total),
+        totalWagered: String(p.total_wagered),
+        playerCount: String(p.player_count),
         timestamp: e.timestampMs || '',
       };
     });
@@ -54,38 +52,28 @@ export function ProjectHistoryPage() {
       )}
 
       <div className="space-y-3">
-        {rounds.map((r, idx) => {
-          const totalShares = BigInt(r.rockTotal) + BigInt(r.paperTotal) + BigInt(r.scissorsTotal);
-          return (
-            <div key={idx} className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-3">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-sm font-medium">
-                  {formatTimestamp(Number(r.roundTargetMs))}
-                </span>
-                <span className="rounded bg-[var(--accent)]/20 px-2 py-0.5 text-xs text-[var(--accent)]">
-                  系统: {CHOICE_LABELS[r.systemChoice]}
-                </span>
+        {rounds.map((r, idx) => (
+          <div key={idx} className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-3">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-sm font-medium">
+                {formatTimestamp(Number(r.roundTargetMs))}
+              </span>
+              <span className="rounded bg-[var(--accent)]/20 px-2 py-0.5 text-xs text-[var(--accent)]">
+                系统: {CHOICE_LABELS[r.systemChoice]}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div className="rounded bg-[var(--bg-secondary)] p-2 text-center">
+                <div className="text-xs text-[var(--text-secondary)]">总下注额</div>
+                <div>{formatUsdc(r.totalWagered)} USDC</div>
               </div>
-              <div className="grid grid-cols-3 gap-2 text-sm">
-                <div className="rounded bg-[var(--bg-secondary)] p-2 text-center">
-                  <div className="text-xs text-[var(--text-secondary)]">🪨 石头</div>
-                  <div>{r.rockTotal} 份</div>
-                </div>
-                <div className="rounded bg-[var(--bg-secondary)] p-2 text-center">
-                  <div className="text-xs text-[var(--text-secondary)]">📄 布</div>
-                  <div>{r.paperTotal} 份</div>
-                </div>
-                <div className="rounded bg-[var(--bg-secondary)] p-2 text-center">
-                  <div className="text-xs text-[var(--text-secondary)]">✂️ 剪刀</div>
-                  <div>{r.scissorsTotal} 份</div>
-                </div>
-              </div>
-              <div className="mt-2 text-xs text-[var(--text-secondary)]">
-                总份额: {totalShares.toString()}
+              <div className="rounded bg-[var(--bg-secondary)] p-2 text-center">
+                <div className="text-xs text-[var(--text-secondary)]">参与人数</div>
+                <div>{r.playerCount}</div>
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
       {hasMore && (

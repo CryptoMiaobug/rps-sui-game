@@ -8,19 +8,20 @@ export interface GameState {
   fee_bps: number;
   min_bet: number;
   max_bet: number;
+  bet_cap: number;
   is_paused: boolean;
   total_rounds: number;
   total_volume: string;
   total_users: number;
-  treasury: string;
+  vault: string;
   rounds_table_id: string;
   player_stats_table_id: string;
 }
 
 function parseFields(fields: Record<string, unknown>): GameState {
   const f = fields as Record<string, unknown>;
-  const treasuryObj = f.treasury as Record<string, unknown> | undefined;
-  const treasuryFields = treasuryObj?.fields as Record<string, unknown> | undefined;
+  const vaultObj = f.vault as Record<string, unknown> | undefined;
+  const vaultFields = vaultObj?.fields as Record<string, unknown> | undefined;
   const roundsObj = f.rounds as Record<string, unknown> | undefined;
   const roundsFields = roundsObj?.fields as Record<string, unknown> | undefined;
   const psObj = f.player_stats as Record<string, unknown> | undefined;
@@ -33,11 +34,12 @@ function parseFields(fields: Record<string, unknown>): GameState {
     fee_bps: Number(f.fee_bps),
     min_bet: Number(f.min_bet),
     max_bet: Number(f.max_bet),
+    bet_cap: Number(f.bet_cap),
     is_paused: Boolean(f.is_paused),
     total_rounds: Number(f.total_rounds),
     total_volume: String(f.total_volume || '0'),
     total_users: Number(f.total_users),
-    treasury: String(treasuryFields?.value ?? '0'),
+    vault: String(vaultFields?.value ?? '0'),
     rounds_table_id: String((roundsFields?.id as Record<string, unknown>)?.id ?? ''),
     player_stats_table_id: String((psFields?.id as Record<string, unknown>)?.id ?? ''),
   };
