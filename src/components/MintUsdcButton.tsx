@@ -12,7 +12,7 @@ export function MintUsdcButton() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');
 
-  const COOLDOWN_MS = 3_600_000; // 60 minutes
+  const COOLDOWN_MS = 1_800_000; // 30 minutes
   const COOLDOWN_KEY_PREFIX = 'rps_faucet_last_claim_';
 
   const getCooldownKey = () => COOLDOWN_KEY_PREFIX + (account?.address || '');
