@@ -51,6 +51,7 @@ export async function resolveReferralCode(client: any, code: string): Promise<st
       parentId: tableId,
       name: { type: '0x0000000000000000000000000000000000000000000000000000000000000001::string::String', value: code },
     });
+    if ((result as any).error) return null;
     if (result.data?.content) {
       return (result.data.content as any).fields?.value || null;
     }

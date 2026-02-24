@@ -61,13 +61,16 @@ export function ReferralCard() {
       const fields = (game.data?.content as any)?.fields;
       if (!fields?.referral_codes?.fields?.id?.id) return true;
       const tableId = fields.referral_codes.fields.id.id;
-      await client.getDynamicFieldObject({
+      const result = await client.getDynamicFieldObject({
         parentId: tableId,
         name: { type: '0x0000000000000000000000000000000000000000000000000000000000000001::string::String', value: code },
       });
-      return false; // found = taken
+      // If error (not found), code is available
+      if ((result as any).error) return true;
+      // If data exists, code is taken
+      return !result.data;
     } catch {
-      return true; // not found = available
+      return true; // error = available
     }
   };
 
