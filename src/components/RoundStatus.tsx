@@ -41,11 +41,11 @@ export function RoundStatus({ round, bufferMs, betCap, userBets, userAddress }: 
           <span className="text-sm font-medium">{round.bet_count}</span>
         </div>
         <div className="rounded-lg bg-[var(--bg-secondary)] px-3 py-2">
-          <div className="text-xs text-[var(--text-secondary)] mb-1">赔率规则</div>
+          <div className="text-xs text-[var(--text-secondary)] mb-1">赔率规则（下注时收取 2% 手续费）</div>
           <div className="flex gap-3 text-xs">
-            <span className="text-[var(--green)]">赢 ×1.98</span>
-            <span className="text-[var(--yellow)]">平 ×0.98</span>
-            <span className="text-[var(--red)]">输 ×0</span>
+            <span className="text-[var(--green)]">赢：一倍奖励 + 本金</span>
+            <span className="text-[var(--yellow)]">平：退回本金</span>
+            <span className="text-[var(--red)]">输：没收本金</span>
           </div>
         </div>
       </div>

@@ -60,15 +60,7 @@ export function GuideCard() {
         </div>
 
         <div className="flex gap-3">
-          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-yellow-500/20 text-xs font-bold text-yellow-400">5</span>
-          <div>
-            <span className="text-[var(--text-primary)] font-medium">赔率规则</span>
-            <span className="ml-1">— 下注时收取 2% 手续费。赢：一倍奖励 + 本金 / 平：退回本金 / 输：没收本金</span>
-          </div>
-        </div>
-
-        <div className="flex gap-3">
-          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-purple-500/20 text-xs font-bold text-purple-400">6</span>
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-purple-500/20 text-xs font-bold text-purple-400">5</span>
           <div>
             <span className="text-[var(--text-primary)] font-medium">邀请返利</span>
             <span className="ml-1">— 下注一次后可注册专属推荐码，分享链接邀请好友，推荐数据实时统计</span>
