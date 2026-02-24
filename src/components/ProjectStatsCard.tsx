@@ -19,7 +19,7 @@ export function ProjectStatsCard({ game }: Props) {
         </Link>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatItem label="总轮数" value={String(game.total_rounds)} />
+        <StatItem label="总轮数" value={String(Math.max(0, game.total_rounds - 1))} />
         <StatItem label="总交易量" value={`${formatUsdc(game.total_volume)} USDC`} />
         <StatItem label="总用户数" value={String(game.total_users)} />
         <StatItem label="资金池" value={`${formatUsdc(game.vault)} USDC`} />
