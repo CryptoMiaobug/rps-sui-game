@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useCurrentAccount, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
 import { useEvents } from '../hooks/useEvents';
+import { useGameState } from '../hooks/useGameState';
 import { CHOICE_LABELS, PACKAGE_ID, GAME_ID, USDC_TYPE } from '../constants';
 import { formatUsdc, formatTimestamp } from '../utils';
 import type { SuiEvent, EventId } from '@mysten/sui/jsonRpc';
@@ -23,6 +24,7 @@ interface PayoutRow {
 export function UserHistoryPage() {
   const account = useCurrentAccount();
   const { queryBetEvents, queryPayoutEvents, loading } = useEvents();
+  const { gameState } = useGameState();
   const { mutateAsync: signAndExecute, isPending: claiming } = useSignAndExecuteTransaction();
   const [bets, setBets] = useState<BetRow[]>([]);
   const [payouts, setPayouts] = useState<PayoutRow[]>([]);
@@ -119,6 +121,7 @@ export function UserHistoryPage() {
           const hasPayout = payout !== undefined;
           const claimState = claimStatus[roundMs];
           const choice = roundBets[0]?.choice;
+          const isCurrentRound = gameState && Number(roundMs) >= gameState.current_target_ms;
 
           return (
             <div key={roundMs} className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-3">
@@ -133,6 +136,8 @@ export function UserHistoryPage() {
                     <span className="text-xs text-[var(--green)]">✅ 已领取</span>
                   ) : claimState === 'claiming' ? (
                     <span className="text-xs text-[var(--yellow)]">领取中...</span>
+                  ) : isCurrentRound ? (
+                    <span className="text-xs text-[var(--text-secondary)]">⏳ 等待开奖</span>
                   ) : (
                     <button
                       onClick={() => handleClaim(roundMs)}
