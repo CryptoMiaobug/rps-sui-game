@@ -37,13 +37,17 @@ export function useReferral() {
         for (const e of result.data) {
           const p = e.parsedJson as Record<string, unknown>;
           if (p.game_id !== GAME_ID) continue;
-          const ref = p.referrer as Record<string, unknown> | null;
+          const ref = p.referrer;
           if (!ref) continue;
-          // Option<address> in Sui events: { vec: [addr] } or { vec: [] }
-          const vec = ref.vec as string[] | undefined;
-          if (!vec || vec.length === 0) continue;
-          const referrerAddr = vec[0];
-          if (referrerAddr !== myAddress) continue;
+          // referrer can be a direct address string or Option { vec: [addr] }
+          let referrerAddr: string | null = null;
+          if (typeof ref === 'string') {
+            referrerAddr = ref;
+          } else if (typeof ref === 'object') {
+            const vec = (ref as Record<string, unknown>).vec as string[] | undefined;
+            if (vec && vec.length > 0) referrerAddr = vec[0];
+          }
+          if (!referrerAddr || referrerAddr !== myAddress) continue;
 
           const user = p.user as string;
           const amount = BigInt(p.amount as string);
@@ -89,11 +93,16 @@ export function useReferral() {
         for (const e of result.data) {
           const p = e.parsedJson as Record<string, unknown>;
           if (p.game_id !== GAME_ID) continue;
-          const ref = p.referrer as Record<string, unknown> | null;
+          const ref = p.referrer;
           if (!ref) continue;
-          const vec = ref.vec as string[] | undefined;
-          if (!vec || vec.length === 0) continue;
-          const referrerAddr = vec[0];
+          let referrerAddr: string | null = null;
+          if (typeof ref === 'string') {
+            referrerAddr = ref;
+          } else if (typeof ref === 'object') {
+            const vec = (ref as Record<string, unknown>).vec as string[] | undefined;
+            if (vec && vec.length > 0) referrerAddr = vec[0];
+          }
+          if (!referrerAddr) continue;
           const user = p.user as string;
           const amount = BigInt(p.amount as string);
 
