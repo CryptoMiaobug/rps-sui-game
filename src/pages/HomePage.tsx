@@ -10,6 +10,7 @@ import { PlayerStatsCard } from '../components/PlayerStatsCard';
 import { ProjectStatsCard } from '../components/ProjectStatsCard';
 import { ReferralCard } from '../components/ReferralCard';
 import { RevealAnimation } from '../components/RevealAnimation';
+import { GuideCard } from '../components/GuideCard';
 
 export function HomePage() {
   const account = useCurrentAccount();
@@ -51,6 +52,8 @@ export function HomePage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-4 px-4 py-4">
+      <GuideCard />
+
       {roundState && (
         <RoundStatus
           round={roundState}
