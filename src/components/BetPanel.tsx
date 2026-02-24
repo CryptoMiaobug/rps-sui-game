@@ -58,9 +58,14 @@ export function BetPanel({ minBet, maxBet, isBettingOpen, userBets, remainingCap
     const referrer = getReferrer();
 
     try {
-      // Get USDC coins
+      // Get USDC coins and check balance
       const coins = await client.getCoins({ owner: account.address, coinType: USDC_TYPE });
       if (!coins.data.length) { setError('没有 USDC 代币'); return; }
+      const totalBalance = coins.data.reduce((sum, c) => sum + BigInt(c.balance), 0n);
+      if (totalBalance < amountRaw) {
+        setError(`USDC 余额不足，当前 ${Number(totalBalance) / USDC_UNIT} USDC`);
+        return;
+      }
 
       const tx = new Transaction();
 
