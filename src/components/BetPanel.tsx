@@ -204,10 +204,10 @@ export function BetPanel({ minBet, maxBet, isBettingOpen, userBets, remainingCap
         <button
           onClick={handleBet}
           disabled={!isBettingOpen || isPending}
-          className={`w-full rounded-xl py-3 font-semibold text-white transition-all
+          className={`w-full rounded-xl py-3 font-semibold text-white transition-all shadow-md
             ${isBettingOpen && !isPending
-              ? 'bg-[var(--accent)] hover:bg-[var(--accent-hover)] active:scale-[0.98]'
-              : 'bg-gray-600 cursor-not-allowed'}`}
+              ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 hover:from-purple-600 hover:via-pink-600 hover:to-orange-500 active:scale-[0.98]'
+              : 'bg-gray-400 cursor-not-allowed'}`}
         >
           {isPending ? '提交中...' : !isBettingOpen ? '封盘中，等待开奖' : '确认下注'}
         </button>

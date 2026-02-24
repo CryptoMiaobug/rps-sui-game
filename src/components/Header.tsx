@@ -13,7 +13,7 @@ export function Header() {
       <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2">
           <span className="text-2xl">🎮</span>
-          <span className="text-lg font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          <span className="text-lg font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">
             RPS-Sui
           </span>
         </div>

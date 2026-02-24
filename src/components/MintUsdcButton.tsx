@@ -93,7 +93,7 @@ export function MintUsdcButton() {
       <button
         onClick={handleClaim}
         disabled={loading || remaining > 0}
-        className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50 transition-colors"
+        className="rounded-lg bg-gradient-to-r from-emerald-400 to-teal-500 px-4 py-2 text-sm font-medium text-white hover:from-emerald-500 hover:to-teal-600 disabled:opacity-50 transition-all shadow-md"
       >
         {loading ? '领取中...' : remaining > 0 ? `🪙 冷却中 (${Math.ceil(remaining / 60000)}分钟)` : '🪙 领取测试 USDC'}
       </button>
