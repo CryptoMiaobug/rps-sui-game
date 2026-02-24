@@ -52,6 +52,17 @@ export function HomePage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-4 px-4 py-4">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden animate-slide-up">
+        <video
+          src="/intro.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full"
+        />
+      </div>
+
       <GuideCard />
 
       {roundState && (
