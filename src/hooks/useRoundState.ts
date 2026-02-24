@@ -28,14 +28,15 @@ function parseRoundFields(fields: Record<string, unknown>): RoundState {
 }
 
 export function useRoundState(roundsTableId: string | undefined, targetMs: number | undefined) {
+  const enabled = !!roundsTableId && !!targetMs;
   const { data, isLoading, error, refetch } = useSuiClientQuery(
     'getDynamicFieldObject',
     {
-      parentId: roundsTableId!,
-      name: { type: 'u64', value: String(targetMs) },
+      parentId: roundsTableId || '',
+      name: { type: 'u64', value: String(targetMs || 0) },
     },
     {
-      enabled: !!roundsTableId && !!targetMs,
+      enabled,
       refetchInterval: 5000,
     }
   );

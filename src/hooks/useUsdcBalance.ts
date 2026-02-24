@@ -4,7 +4,7 @@ import { USDC_TYPE } from '../constants';
 export function useUsdcBalance(address: string | undefined) {
   const { data, isLoading, refetch } = useSuiClientQuery(
     'getBalance',
-    { owner: address!, coinType: USDC_TYPE },
+    address ? { owner: address, coinType: USDC_TYPE } : { owner: '0x0', coinType: USDC_TYPE },
     { enabled: !!address, refetchInterval: 10000 }
   );
 

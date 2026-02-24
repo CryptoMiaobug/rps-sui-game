@@ -16,14 +16,15 @@ function parseUserBetsFields(fields: Record<string, unknown>): UserBets {
 }
 
 export function useUserBets(userBetsTableId: string | undefined, userAddress: string | undefined) {
+  const enabled = !!userBetsTableId && !!userAddress;
   const { data, isLoading, error, refetch } = useSuiClientQuery(
     'getDynamicFieldObject',
     {
-      parentId: userBetsTableId!,
-      name: { type: 'address', value: userAddress! },
+      parentId: userBetsTableId || '',
+      name: { type: 'address', value: userAddress || '' },
     },
     {
-      enabled: !!userBetsTableId && !!userAddress,
+      enabled,
       refetchInterval: 5000,
     }
   );

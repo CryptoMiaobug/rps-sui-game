@@ -26,14 +26,15 @@ function parsePlayerStatsFields(fields: Record<string, unknown>): PlayerStats {
 }
 
 export function usePlayerStats(playerStatsTableId: string | undefined, userAddress: string | undefined) {
+  const enabled = !!playerStatsTableId && !!userAddress;
   const { data, isLoading, error, refetch } = useSuiClientQuery(
     'getDynamicFieldObject',
     {
-      parentId: playerStatsTableId!,
-      name: { type: 'address', value: userAddress! },
+      parentId: playerStatsTableId || '',
+      name: { type: 'address', value: userAddress || '' },
     },
     {
-      enabled: !!playerStatsTableId && !!userAddress,
+      enabled,
       refetchInterval: 10000,
     }
   );
