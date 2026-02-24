@@ -13,10 +13,13 @@ export function MintUsdcButton() {
   const [msg, setMsg] = useState('');
 
   const COOLDOWN_MS = 3_600_000; // 60 minutes
-  const COOLDOWN_KEY = 'rps_faucet_last_claim';
+  const COOLDOWN_KEY_PREFIX = 'rps_faucet_last_claim_';
+
+  const getCooldownKey = () => COOLDOWN_KEY_PREFIX + (account?.address || '');
 
   const getRemaining = () => {
-    const last = localStorage.getItem(COOLDOWN_KEY);
+    if (!account) return 0;
+    const last = localStorage.getItem(getCooldownKey());
     if (!last) return 0;
     const elapsed = Date.now() - parseInt(last);
     return Math.max(0, COOLDOWN_MS - elapsed);
@@ -24,11 +27,19 @@ export function MintUsdcButton() {
 
   const [remaining, setRemaining] = useState(getRemaining());
 
-  // Update countdown every second
+  // Update countdown every second + reset on account change
   useState(() => {
     const timer = setInterval(() => setRemaining(getRemaining()), 1000);
     return () => clearInterval(timer);
   });
+
+  // Reset remaining when account changes
+  const [prevAddr, setPrevAddr] = useState(account?.address);
+  if (account?.address !== prevAddr) {
+    setPrevAddr(account?.address);
+    setRemaining(getRemaining());
+    setMsg('');
+  }
 
   if (!account) return null;
 
@@ -59,7 +70,7 @@ export function MintUsdcButton() {
           onSuccess: async (result) => {
             await client.waitForTransaction({ digest: result.digest });
             refetch();
-            localStorage.setItem(COOLDOWN_KEY, String(Date.now()));
+            localStorage.setItem(getCooldownKey(), String(Date.now()));
             setRemaining(COOLDOWN_MS);
             setMsg('✅ 领取成功！+50 USDC');
           },
