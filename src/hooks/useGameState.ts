@@ -20,8 +20,14 @@ export interface GameState {
 
 function parseFields(fields: Record<string, unknown>): GameState {
   const f = fields as Record<string, unknown>;
-  const vaultObj = f.vault as Record<string, unknown> | undefined;
-  const vaultFields = vaultObj?.fields as Record<string, unknown> | undefined;
+  const vaultObj = f.vault as Record<string, unknown> | string | undefined;
+  let vaultValue = '0';
+  if (typeof vaultObj === 'string' || typeof vaultObj === 'number') {
+    vaultValue = String(vaultObj);
+  } else if (vaultObj) {
+    const vaultFields = (vaultObj as Record<string, unknown>)?.fields as Record<string, unknown> | undefined;
+    vaultValue = String(vaultFields?.value ?? vaultObj);
+  }
   const roundsObj = f.rounds as Record<string, unknown> | undefined;
   const roundsFields = roundsObj?.fields as Record<string, unknown> | undefined;
   const psObj = f.player_stats as Record<string, unknown> | undefined;
@@ -39,7 +45,7 @@ function parseFields(fields: Record<string, unknown>): GameState {
     total_rounds: Number(f.total_rounds),
     total_volume: String(f.total_volume || '0'),
     total_users: Number(f.total_users),
-    vault: String(vaultFields?.value ?? '0'),
+    vault: vaultValue,
     rounds_table_id: String((roundsFields?.id as Record<string, unknown>)?.id ?? ''),
     player_stats_table_id: String((psFields?.id as Record<string, unknown>)?.id ?? ''),
   };
