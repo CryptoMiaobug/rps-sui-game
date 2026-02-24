@@ -1,9 +1,10 @@
 import { useSuiClient } from '@mysten/dapp-kit';
 import { useCallback, useState } from 'react';
-import { EVENT_TYPES } from '../constants';
+import { EVENT_TYPES, GAME_ID } from '../constants';
 import type { SuiEvent, EventId } from '@mysten/sui/jsonRpc';
 
 export interface BetPlacedEvent {
+  game_id: string;
   user: string;
   round_target_ms: string;
   choice: number;
@@ -12,6 +13,7 @@ export interface BetPlacedEvent {
 }
 
 export interface RoundRevealedEvent {
+  game_id: string;
   round_target_ms: string;
   system_choice: number;
   next_target_ms: string;
@@ -20,10 +22,17 @@ export interface RoundRevealedEvent {
 }
 
 export interface PayoutEvent {
+  game_id: string;
   user: string;
   round_target_ms: string;
   payout_amount: string;
 }
+
+const filterByGame = (events: SuiEvent[]) =>
+  events.filter((e) => {
+    const p = e.parsedJson as Record<string, unknown>;
+    return p.game_id === GAME_ID;
+  });
 
 export function useEvents() {
   const client = useSuiClient();
@@ -38,7 +47,6 @@ export function useEvents() {
         let nextCursor: EventId | null | undefined = opts?.cursor ?? undefined;
         let hasNextPage = true;
 
-        // Keep paginating until we have enough user events or no more pages
         while (allEvents.length < targetCount && hasNextPage) {
           const result = await client.queryEvents({
             query: { MoveEventType: EVENT_TYPES.BetPlaced },
@@ -46,7 +54,7 @@ export function useEvents() {
             cursor: nextCursor ?? undefined,
             limit: 100,
           });
-          let events = result.data;
+          let events = filterByGame(result.data);
           if (opts?.sender) {
             events = events.filter((e: SuiEvent) => {
               const parsed = e.parsedJson as Record<string, unknown>;
@@ -80,7 +88,8 @@ export function useEvents() {
           cursor: opts?.cursor ?? undefined,
           limit: opts?.limit ?? 50,
         });
-        return { events: result.data, nextCursor: result.nextCursor, hasNextPage: result.hasNextPage };
+        const events = filterByGame(result.data);
+        return { events, nextCursor: result.nextCursor, hasNextPage: result.hasNextPage };
       } finally {
         setLoading(false);
       }
@@ -103,7 +112,7 @@ export function useEvents() {
           order: 'descending',
           limit: opts?.limit ?? 100,
         });
-        let events = [...distResult.data, ...claimResult.data];
+        let events = [...filterByGame(distResult.data), ...filterByGame(claimResult.data)];
         if (opts?.sender) {
           events = events.filter((e: SuiEvent) => {
             const parsed = e.parsedJson as Record<string, unknown>;
