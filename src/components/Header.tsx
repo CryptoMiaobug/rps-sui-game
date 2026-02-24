@@ -1,6 +1,7 @@
 import { ConnectButton, useCurrentAccount } from '@mysten/dapp-kit';
 import { useUsdcBalance } from '../hooks/useUsdcBalance';
 import { MintUsdcButton } from './MintUsdcButton';
+import { FaucetSuiButton } from './FaucetSuiButton';
 import { formatUsdc, shortenAddress } from '../utils';
 
 export function Header() {
@@ -24,6 +25,7 @@ export function Header() {
                 <span className="text-[var(--green)]">{formatUsdc(balance)} USDC</span>
               </div>
               <MintUsdcButton />
+              <FaucetSuiButton />
             </>
           )}
           <ConnectButton />
