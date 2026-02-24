@@ -12,9 +12,35 @@ export function MintUsdcButton() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');
 
+  const COOLDOWN_MS = 3_600_000; // 60 minutes
+  const COOLDOWN_KEY = 'rps_faucet_last_claim';
+
+  const getRemaining = () => {
+    const last = localStorage.getItem(COOLDOWN_KEY);
+    if (!last) return 0;
+    const elapsed = Date.now() - parseInt(last);
+    return Math.max(0, COOLDOWN_MS - elapsed);
+  };
+
+  const [remaining, setRemaining] = useState(getRemaining());
+
+  // Update countdown every second
+  useState(() => {
+    const timer = setInterval(() => setRemaining(getRemaining()), 1000);
+    return () => clearInterval(timer);
+  });
+
   if (!account) return null;
 
   const handleClaim = async () => {
+    const rem = getRemaining();
+    if (rem > 0) {
+      const mins = Math.ceil(rem / 60000);
+      setMsg(`⏰ 冷却中，还需等待 ${mins} 分钟`);
+      setRemaining(rem);
+      return;
+    }
+
     setLoading(true);
     setMsg('');
     try {
@@ -33,7 +59,9 @@ export function MintUsdcButton() {
           onSuccess: async (result) => {
             await client.waitForTransaction({ digest: result.digest });
             refetch();
-            setMsg('✅ 领取成功！+10,000 USDC');
+            localStorage.setItem(COOLDOWN_KEY, String(Date.now()));
+            setRemaining(COOLDOWN_MS);
+            setMsg('✅ 领取成功！');
           },
         }
       );
@@ -53,10 +81,10 @@ export function MintUsdcButton() {
     <div className="flex flex-col items-center gap-1">
       <button
         onClick={handleClaim}
-        disabled={loading}
+        disabled={loading || remaining > 0}
         className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50 transition-colors"
       >
-        {loading ? '领取中...' : '🪙 领取测试 USDC'}
+        {loading ? '领取中...' : remaining > 0 ? `🪙 冷却中 (${Math.ceil(remaining / 60000)}分钟)` : '🪙 领取测试 USDC'}
       </button>
       {msg && <span className="text-xs">{msg}</span>}
     </div>
