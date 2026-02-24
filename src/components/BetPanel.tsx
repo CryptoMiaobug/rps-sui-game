@@ -10,9 +10,10 @@ interface Props {
   maxBet: number;
   isBettingOpen: boolean;
   userBets?: UserBets | null;
+  remainingCap: bigint;
 }
 
-export function BetPanel({ minBet, maxBet, isBettingOpen, userBets }: Props) {
+export function BetPanel({ minBet, maxBet, isBettingOpen, userBets, remainingCap }: Props) {
   const account = useCurrentAccount();
   const client = useSuiClient();
   const { mutateAsync: signAndExecute, isPending } = useSignAndExecuteTransaction();
@@ -45,6 +46,11 @@ export function BetPanel({ minBet, maxBet, isBettingOpen, userBets }: Props) {
     }
     if (maxBetUsdc > 0 && amountNum > maxBetUsdc) {
       setError(`最大下注 ${maxBetUsdc} USDC`);
+      return;
+    }
+    const remainingUsdc = Number(remainingCap) / USDC_UNIT;
+    if (amountNum > remainingUsdc) {
+      setError(`超出本轮剩余额度，最多还能下 ${remainingUsdc} USDC`);
       return;
     }
 

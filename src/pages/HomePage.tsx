@@ -44,6 +44,10 @@ export function HomePage() {
     );
   }
 
+  const remainingCap = roundState
+    ? BigInt(gameState.bet_cap) - BigInt(roundState.total_wagered)
+    : BigInt(gameState.bet_cap);
+
   return (
     <div className="mx-auto max-w-4xl space-y-4 px-4 py-4">
       {roundState && (
@@ -61,6 +65,7 @@ export function HomePage() {
         maxBet={gameState.max_bet}
         isBettingOpen={isBettingOpen}
         userBets={userBets}
+        remainingCap={remainingCap > 0n ? remainingCap : 0n}
       />
 
       {account && playerStats && (
