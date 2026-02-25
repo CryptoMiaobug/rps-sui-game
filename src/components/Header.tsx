@@ -30,6 +30,14 @@ export function Header() {
               <FaucetSuiButton />
             </>
           )}
+          <a
+            href="https://crowdwalrus.xyz/campaigns/rps-sui"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-lg border border-[var(--accent)] bg-[var(--accent)]/10 px-2.5 py-1.5 text-xs font-medium text-[var(--accent)] hover:bg-[var(--accent)]/20 transition-colors"
+          >
+            💜 {lang === 'zh' ? '支持我们' : 'Support Us'}
+          </a>
           <button
             onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')}
             className="rounded-lg border border-[var(--border)] px-2.5 py-1.5 text-xs font-medium hover:border-[var(--accent)] transition-colors"
