@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import type { PlayerStats } from '../hooks/usePlayerStats';
 import { formatUsdc } from '../utils';
+import { useLang } from '../i18n';
 
 interface Props {
   stats: PlayerStats;
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function PlayerStatsCard({ stats, currentRoundWagered, isCurrentRoundPending }: Props) {
+  const { t } = useLang();
   const pendingWager = BigInt(currentRoundWagered || '0');
   const hasPending = isCurrentRoundPending && pendingWager > 0n;
 
@@ -23,31 +25,31 @@ export function PlayerStatsCard({ stats, currentRoundWagered, isCurrentRoundPend
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4 animate-slide-up">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-base font-semibold">我的统计</h3>
+        <h3 className="text-base font-semibold">{t('player.title')}</h3>
         <Link
           to="/history/user"
           className="text-xs text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
         >
-          查看详情 →
+          {t('player.viewDetails')}
         </Link>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatItem label="已结算期数" value={String(adjustedBets)} />
-        <StatItem label="已结算下注" value={`${formatUsdc(adjustedWagered)} USDC`} />
-        <StatItem label="总赢得" value={`${formatUsdc(won)} USDC`} />
+        <StatItem label={t('player.settledRounds')} value={String(adjustedBets)} />
+        <StatItem label={t('player.settledWager')} value={`${formatUsdc(adjustedWagered)} USDC`} />
+        <StatItem label={t('player.totalWon')} value={`${formatUsdc(won)} USDC`} />
         <StatItem
-          label="盈亏"
+          label={t('player.pnl')}
           value={`${pnl >= 0n ? '+' : ''}${formatUsdc(pnl)} USDC`}
           color={pnl >= 0n ? 'text-[var(--green)]' : 'text-[var(--red)]'}
         />
-        <StatItem label="胜/负/平" value={`${stats.win_count}/${stats.lose_count}/${stats.tie_count}`} />
-        <StatItem label="胜率" value={`${winRate}%`} />
-        <StatItem label="当前连胜" value={String(stats.current_streak)} />
-        <StatItem label="最高连胜" value={String(stats.max_streak)} />
+        <StatItem label={t('player.wlt')} value={`${stats.win_count}/${stats.lose_count}/${stats.tie_count}`} />
+        <StatItem label={t('player.winRate')} value={`${winRate}%`} />
+        <StatItem label={t('player.currentStreak')} value={String(stats.current_streak)} />
+        <StatItem label={t('player.maxStreak')} value={String(stats.max_streak)} />
       </div>
       {hasPending && (
         <div className="mt-2 text-xs text-[var(--yellow)]">
-          ⏳ 当前轮次下注 {formatUsdc(pendingWager)} USDC 待结算，未计入统计
+          {t('player.pendingNote', formatUsdc(pendingWager))}
         </div>
       )}
     </div>

@@ -3,10 +3,12 @@ import { useUsdcBalance } from '../hooks/useUsdcBalance';
 import { MintUsdcButton } from './MintUsdcButton';
 import { FaucetSuiButton } from './FaucetSuiButton';
 import { formatUsdc, shortenAddress } from '../utils';
+import { useLang } from '../i18n';
 
 export function Header() {
   const account = useCurrentAccount();
   const { balance } = useUsdcBalance(account?.address);
+  const { lang, setLang } = useLang();
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--bg-primary)]/90 backdrop-blur-sm">
@@ -28,6 +30,12 @@ export function Header() {
               <FaucetSuiButton />
             </>
           )}
+          <button
+            onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')}
+            className="rounded-lg border border-[var(--border)] px-2.5 py-1.5 text-xs font-medium hover:border-[var(--accent)] transition-colors"
+          >
+            {lang === 'zh' ? '中/EN' : 'EN/中'}
+          </button>
           <ConnectButton />
         </div>
       </div>

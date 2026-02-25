@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { formatCountdown } from '../utils';
+import { useLang } from '../i18n';
 
 interface Props {
   targetMs: number;
@@ -8,6 +9,7 @@ interface Props {
 
 export function CountdownTimer({ targetMs, bufferMs }: Props) {
   const [now, setNow] = useState(Date.now());
+  const { t } = useLang();
 
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
@@ -23,15 +25,15 @@ export function CountdownTimer({ targetMs, bufferMs }: Props) {
 
   if (timeToBetting > 0) {
     status = 'betting';
-    statusLabel = '🟢 下注中';
+    statusLabel = t('timer.betting');
     statusColor = 'text-[var(--green)]';
   } else if (timeToReveal > 0) {
     status = 'buffer';
-    statusLabel = '🟡 封盘中';
+    statusLabel = t('timer.buffer');
     statusColor = 'text-[var(--yellow)]';
   } else {
     status = 'revealing';
-    statusLabel = '🔴 等待开奖';
+    statusLabel = t('timer.revealing');
     statusColor = 'text-[var(--red)]';
   }
 
@@ -40,18 +42,18 @@ export function CountdownTimer({ targetMs, bufferMs }: Props) {
       <span className={`text-sm font-medium ${statusColor}`}>{statusLabel}</span>
       {status === 'betting' && (
         <div className="text-center">
-          <div className="text-xs text-[var(--text-secondary)]">下注截止倒计时</div>
+          <div className="text-xs text-[var(--text-secondary)]">{t('timer.bettingDeadline')}</div>
           <div className="text-2xl font-mono font-bold tabular-nums">{formatCountdown(timeToBetting)}</div>
         </div>
       )}
       {status === 'buffer' && (
         <div className="text-center">
-          <div className="text-xs text-[var(--text-secondary)]">开奖倒计时</div>
+          <div className="text-xs text-[var(--text-secondary)]">{t('timer.revealCountdown')}</div>
           <div className="text-2xl font-mono font-bold tabular-nums">{formatCountdown(timeToReveal)}</div>
         </div>
       )}
       {status === 'revealing' && (
-        <div className="text-xs text-[var(--text-secondary)]">等待链上开奖...</div>
+        <div className="text-xs text-[var(--text-secondary)]">{t('timer.waitingChain')}</div>
       )}
     </div>
   );

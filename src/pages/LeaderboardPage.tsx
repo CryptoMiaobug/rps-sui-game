@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import { useReferral, type LeaderboardEntry } from '../hooks/useReferral';
 import { useSuiNS } from '../hooks/useSuiNS';
 import { formatUsdc } from '../utils';
+import { useLang } from '../i18n';
 
 export function LeaderboardPage() {
   const { getLeaderboard, loading } = useReferral();
   const { resolveNames } = useSuiNS();
+  const { t } = useLang();
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [nameMap, setNameMap] = useState<Map<string, string>>(new Map());
 
@@ -27,16 +29,16 @@ export function LeaderboardPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-4">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold">推荐排行榜</h2>
-        <Link to="/" className="text-sm text-[var(--accent)]">← 返回</Link>
+        <h2 className="text-lg font-bold">{t('leaderboard.title')}</h2>
+        <Link to="/" className="text-sm text-[var(--accent)]">{t('leaderboard.back')}</Link>
       </div>
 
       {loading && entries.length === 0 && (
-        <div className="text-center text-[var(--text-secondary)]">加载中...</div>
+        <div className="text-center text-[var(--text-secondary)]">{t('leaderboard.loading')}</div>
       )}
 
       {!loading && entries.length === 0 && (
-        <div className="text-center text-[var(--text-secondary)]">暂无推荐数据</div>
+        <div className="text-center text-[var(--text-secondary)]">{t('leaderboard.empty')}</div>
       )}
 
       <div className="space-y-2">
@@ -53,7 +55,7 @@ export function LeaderboardPage() {
               <div className="text-sm font-medium truncate">{displayAddr(entry.address)}</div>
             </div>
             <div className="text-right">
-              <div className="text-sm font-medium">{entry.inviteCount} 人</div>
+              <div className="text-sm font-medium">{t('leaderboard.people', entry.inviteCount)}</div>
               <div className="text-xs text-[var(--text-secondary)]">{formatUsdc(entry.inviteVolume)} USDC</div>
             </div>
           </div>

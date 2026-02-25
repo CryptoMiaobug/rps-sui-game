@@ -5,12 +5,14 @@ import { Link } from 'react-router-dom';
 import { useReferral } from '../hooks/useReferral';
 import { PACKAGE_ID, GAME_ID, USDC_TYPE } from '../constants';
 import { formatUsdc } from '../utils';
+import { useLang } from '../i18n';
 
 export function ReferralCard() {
   const account = useCurrentAccount();
   const client = useSuiClient();
   const { mutateAsync: signAndExecute, isPending } = useSignAndExecuteTransaction();
   const { getMyReferral, loading } = useReferral();
+  const { t } = useLang();
   const [inviteCount, setInviteCount] = useState(0);
   const [inviteVolume, setInviteVolume] = useState(0n);
   const [myCode, setMyCode] = useState<string | null>(null);
@@ -49,9 +51,9 @@ export function ReferralCard() {
   };
 
   const validateCode = (code: string): string | null => {
-    if (code.length < 3) return '推荐码至少3个字符';
-    if (code.length > 20) return '推荐码最多20个字符';
-    if (!/^[a-z0-9_]+$/.test(code)) return '只能用小写字母、数字和下划线';
+    if (code.length < 3) return t('referral.codeMin');
+    if (code.length > 20) return t('referral.codeMax');
+    if (!/^[a-z0-9_]+$/.test(code)) return t('referral.codeFormat');
     return null;
   };
 
@@ -86,7 +88,7 @@ export function ReferralCard() {
     setCheckingCode(true);
     try {
       const available = await checkCodeAvailable(code);
-      if (!available) { setCodeError('推荐码已被占用'); return; }
+      if (!available) { setCodeError(t('referral.codeTaken')); return; }
 
       const tx = new Transaction();
       const encoder = new TextEncoder();
@@ -101,14 +103,14 @@ export function ReferralCard() {
       });
       await signAndExecute({ transaction: tx });
       setMyCode(code);
-      setCodeSuccess('推荐码注册成功！');
+      setCodeSuccess(t('referral.codeSuccess'));
       setCodeInput('');
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
-      if (msg.includes('26')) setCodeError('你已经注册过推荐码了');
-      else if (msg.includes('24')) setCodeError('推荐码已被占用');
-      else if (msg.includes('23')) setCodeError('请先下注一次再注册推荐码');
-      else setCodeError(`注册失败: ${msg.slice(0, 80)}`);
+      if (msg.includes('26')) setCodeError(t('referral.alreadyRegistered'));
+      else if (msg.includes('24')) setCodeError(t('referral.codeTakenErr'));
+      else if (msg.includes('23')) setCodeError(t('referral.betFirst'));
+      else setCodeError(t('referral.registerFail', msg.slice(0, 80)));
     } finally {
       setCheckingCode(false);
     }
@@ -127,25 +129,25 @@ export function ReferralCard() {
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4 animate-slide-up">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-base font-semibold">我的推荐</h3>
+        <h3 className="text-base font-semibold">{t('referral.title')}</h3>
         <Link
           to="/leaderboard"
           className="text-xs text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
         >
-          排行榜 →
+          {t('referral.leaderboard')}
         </Link>
       </div>
 
       {loading ? (
-        <div className="text-sm text-[var(--text-secondary)]">加载中...</div>
+        <div className="text-sm text-[var(--text-secondary)]">{t('referral.loading')}</div>
       ) : (
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-lg bg-[var(--bg-secondary)] p-2">
-            <div className="text-xs text-[var(--text-secondary)]">邀请人数</div>
+            <div className="text-xs text-[var(--text-secondary)]">{t('referral.inviteCount')}</div>
             <div className="text-sm font-medium">{inviteCount}</div>
           </div>
           <div className="rounded-lg bg-[var(--bg-secondary)] p-2">
-            <div className="text-xs text-[var(--text-secondary)]">邀请交易量</div>
+            <div className="text-xs text-[var(--text-secondary)]">{t('referral.inviteVolume')}</div>
             <div className="text-sm font-medium">{formatUsdc(inviteVolume)} USDC</div>
           </div>
         </div>
@@ -154,12 +156,12 @@ export function ReferralCard() {
       {/* Referral code registration */}
       {!myCode ? (
         <div className="mt-3">
-          <div className="text-xs text-[var(--text-secondary)] mb-1">设置推荐码（一次性，不可修改）</div>
+          <div className="text-xs text-[var(--text-secondary)] mb-1">{t('referral.setCode')}</div>
           <div className="flex gap-2">
             <input
               value={codeInput}
               onChange={e => setCodeInput(e.target.value.toLowerCase())}
-              placeholder="3-20位，小写字母/数字/下划线"
+              placeholder={t('referral.codePlaceholder')}
               maxLength={20}
               className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] px-2 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent)] transition-colors"
             />
@@ -168,7 +170,7 @@ export function ReferralCard() {
               disabled={isPending || checkingCode}
               className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs hover:border-[var(--accent)] transition-colors disabled:opacity-50"
             >
-              {isPending || checkingCode ? '...' : '注册'}
+              {isPending || checkingCode ? '...' : t('referral.register')}
             </button>
           </div>
           {codeError && <div className="mt-1 text-xs text-[var(--red)]">{codeError}</div>}
@@ -176,12 +178,12 @@ export function ReferralCard() {
         </div>
       ) : (
         <div className="mt-3">
-          <div className="text-xs text-[var(--text-secondary)] mb-1">我的推荐码: <span className="text-[var(--accent)]">{myCode}</span></div>
+          <div className="text-xs text-[var(--text-secondary)] mb-1">{t('referral.myCode')}<span className="text-[var(--accent)]">{myCode}</span></div>
         </div>
       )}
 
       <div className="mt-3">
-        <div className="text-xs text-[var(--text-secondary)] mb-1">推荐链接</div>
+        <div className="text-xs text-[var(--text-secondary)] mb-1">{t('referral.link')}</div>
         <div className="flex gap-2">
           <input
             readOnly
@@ -192,7 +194,7 @@ export function ReferralCard() {
             onClick={copyLink}
             className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs hover:border-[var(--accent)] transition-colors"
           >
-            复制
+            {t('referral.copy')}
           </button>
         </div>
       </div>

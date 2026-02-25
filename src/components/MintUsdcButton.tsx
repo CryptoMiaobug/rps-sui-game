@@ -3,12 +3,14 @@ import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from '@
 import { Transaction } from '@mysten/sui/transactions';
 import { FAUCET_PACKAGE_ID, FAUCET_OBJECT_ID, CLOCK_ID } from '../constants';
 import { useUsdcBalance } from '../hooks/useUsdcBalance';
+import { useLang } from '../i18n';
 
 export function MintUsdcButton() {
   const account = useCurrentAccount();
   const client = useSuiClient();
   const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
   const { refetch } = useUsdcBalance(account?.address);
+  const { t } = useLang();
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');
 
@@ -47,7 +49,7 @@ export function MintUsdcButton() {
     const rem = getRemaining();
     if (rem > 0) {
       const mins = Math.ceil(rem / 60000);
-      setMsg(`⏰ 冷却中，还需等待 ${mins} 分钟`);
+      setMsg(t('mint.cooldown', mins));
       setRemaining(rem);
       return;
     }
@@ -72,14 +74,14 @@ export function MintUsdcButton() {
             refetch();
             localStorage.setItem(getCooldownKey(), String(Date.now()));
             setRemaining(COOLDOWN_MS);
-            setMsg('✅ 领取成功！+50 USDC');
+            setMsg(t('mint.success'));
           },
         }
       );
     } catch (e: unknown) {
       const errMsg = e instanceof Error ? e.message : String(e);
       if (errMsg.includes('24') || errMsg.includes('cooldown') || errMsg.includes('already')) {
-        setMsg('⏰ 24小时内已领取，请稍后再试');
+        setMsg(t('mint.alreadyClaimed'));
       } else {
         setMsg(`❌ ${errMsg.slice(0, 80)}`);
       }
@@ -95,7 +97,7 @@ export function MintUsdcButton() {
         disabled={loading || remaining > 0}
         className="rounded-lg bg-gradient-to-r from-emerald-400 to-teal-500 px-4 py-2 text-sm font-medium text-white hover:from-emerald-500 hover:to-teal-600 disabled:opacity-50 transition-all shadow-md"
       >
-        {loading ? '领取中...' : remaining > 0 ? `🪙 冷却中 (${Math.ceil(remaining / 60000)}分钟)` : '🪙 领取测试 USDC'}
+        {loading ? t('mint.claiming') : remaining > 0 ? t('mint.cooldownBtn', Math.ceil(remaining / 60000)) : t('mint.claim')}
       </button>
       {msg && <span className="text-xs">{msg}</span>}
     </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { CHOICE_EMOJI, CHOICE_LABELS } from '../constants';
+import { CHOICE_EMOJI } from '../constants';
 import { getWinnerLoser } from '../utils';
+import { useLang } from '../i18n';
 
 interface Props {
   systemChoice: number;
@@ -10,6 +11,13 @@ interface Props {
 export function RevealAnimation({ systemChoice, onClose }: Props) {
   const [phase, setPhase] = useState<'shaking' | 'reveal' | 'done'>('shaking');
   const [displayChoice, setDisplayChoice] = useState(0);
+  const { t } = useLang();
+
+  const choiceLabels: Record<number, string> = {
+    0: t('choice.rock'),
+    1: t('choice.paper'),
+    2: t('choice.scissors'),
+  };
 
   useEffect(() => {
     if (phase !== 'shaking') return;
@@ -35,21 +43,21 @@ export function RevealAnimation({ systemChoice, onClose }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={onClose}>
       <div className="flex flex-col items-center gap-4 rounded-2xl bg-[var(--bg-card)] p-8 border border-[var(--border)]" onClick={e => e.stopPropagation()}>
-        <div className="text-lg font-semibold text-[var(--text-secondary)]">系统出拳</div>
+        <div className="text-lg font-semibold text-[var(--text-secondary)]">{t('reveal.systemMove')}</div>
         <div className={`text-7xl ${phase === 'shaking' ? 'animate-shake' : 'animate-bounce-in'}`}>
           {phase === 'shaking' ? CHOICE_EMOJI[displayChoice] : CHOICE_EMOJI[systemChoice]}
         </div>
         {phase === 'done' && (
           <div className="animate-bounce-in text-center">
-            <div className="text-xl font-bold">{CHOICE_LABELS[systemChoice]}</div>
+            <div className="text-xl font-bold">{choiceLabels[systemChoice]}</div>
             <div className="mt-2 text-sm text-[var(--green)]">
-              🏆 赢家: {CHOICE_LABELS[winner]}
+              {t('reveal.winner', choiceLabels[winner])}
             </div>
             <button
               onClick={onClose}
               className="mt-4 rounded-lg bg-[var(--accent)] px-6 py-2 text-sm font-medium text-white hover:bg-[var(--accent-hover)] transition-colors"
             >
-              关闭
+              {t('reveal.close')}
             </button>
           </div>
         )}

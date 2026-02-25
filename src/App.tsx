@@ -8,6 +8,7 @@ import { HomePage } from './pages/HomePage';
 import { UserHistoryPage } from './pages/UserHistoryPage';
 import { ProjectHistoryPage } from './pages/ProjectHistoryPage';
 import { LeaderboardPage } from './pages/LeaderboardPage';
+import { LangProvider } from './i18n';
 import { setReferrer, resolveReferralCode } from './utils';
 import '@mysten/dapp-kit/dist/index.css';
 
@@ -45,20 +46,22 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
         <WalletProvider autoConnect>
-          <HashRouter>
-            <ReferralHandler />
-            <div className="min-h-screen bg-[var(--bg-primary)]">
-              <Header />
-              <main className="pb-8">
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/history/user" element={<UserHistoryPage />} />
-                  <Route path="/history/project" element={<ProjectHistoryPage />} />
-                  <Route path="/leaderboard" element={<LeaderboardPage />} />
-                </Routes>
-              </main>
-            </div>
-          </HashRouter>
+          <LangProvider>
+            <HashRouter>
+              <ReferralHandler />
+              <div className="min-h-screen bg-[var(--bg-primary)]">
+                <Header />
+                <main className="pb-8">
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/history/user" element={<UserHistoryPage />} />
+                    <Route path="/history/project" element={<ProjectHistoryPage />} />
+                    <Route path="/leaderboard" element={<LeaderboardPage />} />
+                  </Routes>
+                </main>
+              </div>
+            </HashRouter>
+          </LangProvider>
         </WalletProvider>
       </SuiClientProvider>
     </QueryClientProvider>

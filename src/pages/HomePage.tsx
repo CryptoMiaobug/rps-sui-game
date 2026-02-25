@@ -11,6 +11,7 @@ import { ProjectStatsCard } from '../components/ProjectStatsCard';
 import { ReferralCard } from '../components/ReferralCard';
 import { RevealAnimation } from '../components/RevealAnimation';
 import { GuideCard } from '../components/GuideCard';
+import { useLang } from '../i18n';
 
 export function HomePage() {
   const account = useCurrentAccount();
@@ -18,6 +19,7 @@ export function HomePage() {
   const { roundState } = useRoundState(gameState?.rounds_table_id, gameState?.current_target_ms);
   const { userBets } = useUserBets(roundState?.user_bets_table_id, account?.address);
   const { playerStats } = usePlayerStats(gameState?.player_stats_table_id, account?.address);
+  const { t } = useLang();
 
   const [showReveal, setShowReveal] = useState(false);
   const prevRevealedRef = useRef<boolean | null>(null);
@@ -41,7 +43,7 @@ export function HomePage() {
   if (!gameState) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="text-[var(--text-secondary)]">加载中...</div>
+        <div className="text-[var(--text-secondary)]">{t('home.loading')}</div>
       </div>
     );
   }

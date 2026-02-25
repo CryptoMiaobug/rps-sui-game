@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useEvents } from '../hooks/useEvents';
-import { CHOICE_LABELS } from '../constants';
 import { formatTimestamp, formatUsdc } from '../utils';
+import { useLang } from '../i18n';
 import type { SuiEvent, EventId } from '@mysten/sui/jsonRpc';
 
 interface RoundRow {
@@ -15,7 +15,14 @@ interface RoundRow {
 
 export function ProjectHistoryPage() {
   const { queryRoundRevealedEvents, loading } = useEvents();
+  const { t } = useLang();
   const [rounds, setRounds] = useState<RoundRow[]>([]);
+
+  const choiceLabels: Record<number, string> = {
+    0: t('choice.rock'),
+    1: t('choice.paper'),
+    2: t('choice.scissors'),
+  };
   const [cursor, setCursor] = useState<EventId | null>(null);
   const [hasMore, setHasMore] = useState(true);
 
@@ -43,12 +50,12 @@ export function ProjectHistoryPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-4">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold">项目历史记录</h2>
-        <Link to="/" className="text-sm text-[var(--accent)]">← 返回</Link>
+        <h2 className="text-lg font-bold">{t('projectHistory.title')}</h2>
+        <Link to="/" className="text-sm text-[var(--accent)]">{t('projectHistory.back')}</Link>
       </div>
 
       {loading && rounds.length === 0 && (
-        <div className="text-center text-[var(--text-secondary)]">加载中...</div>
+        <div className="text-center text-[var(--text-secondary)]">{t('projectHistory.loading')}</div>
       )}
 
       <div className="space-y-3">
@@ -59,16 +66,16 @@ export function ProjectHistoryPage() {
                 {formatTimestamp(Number(r.roundTargetMs))}
               </span>
               <span className="rounded bg-[var(--accent)]/20 px-2 py-0.5 text-xs text-[var(--accent)]">
-                系统: {CHOICE_LABELS[r.systemChoice]}
+                {t('projectHistory.system', choiceLabels[r.systemChoice])}
               </span>
             </div>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div className="rounded bg-[var(--bg-secondary)] p-2 text-center">
-                <div className="text-xs text-[var(--text-secondary)]">总下注额</div>
+                <div className="text-xs text-[var(--text-secondary)]">{t('projectHistory.totalWagered')}</div>
                 <div>{formatUsdc(r.totalWagered)} USDC</div>
               </div>
               <div className="rounded bg-[var(--bg-secondary)] p-2 text-center">
-                <div className="text-xs text-[var(--text-secondary)]">参与人数</div>
+                <div className="text-xs text-[var(--text-secondary)]">{t('projectHistory.playerCount')}</div>
                 <div>{r.playerCount}</div>
               </div>
             </div>
@@ -82,7 +89,7 @@ export function ProjectHistoryPage() {
           disabled={loading}
           className="mt-4 w-full rounded-lg border border-[var(--border)] py-2 text-sm text-[var(--text-secondary)] hover:border-[var(--accent)] transition-colors"
         >
-          {loading ? '加载中...' : '加载更多'}
+          {loading ? t('projectHistory.loading') : t('projectHistory.loadMore')}
         </button>
       )}
     </div>

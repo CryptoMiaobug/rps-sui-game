@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
-import { PACKAGE_ID, GAME_ID, USDC_TYPE, USDC_UNIT, CLOCK_ID, CHOICE_LABELS } from '../constants';
+import { PACKAGE_ID, GAME_ID, USDC_TYPE, USDC_UNIT, CLOCK_ID } from '../constants';
 import { getReferrer } from '../utils';
+import { useLang } from '../i18n';
 import type { UserBets } from '../hooks/useUserBets';
 
 interface Props {
@@ -17,7 +18,14 @@ export function BetPanel({ minBet, maxBet, isBettingOpen, userBets, remainingCap
   const account = useCurrentAccount();
   const client = useSuiClient();
   const { mutateAsync: signAndExecute, isPending } = useSignAndExecuteTransaction();
+  const { t } = useLang();
   const [choice, setChoice] = useState<number | null>(null);
+
+  const choiceLabels: Record<number, string> = {
+    0: t('choice.rock'),
+    1: t('choice.paper'),
+    2: t('choice.scissors'),
+  };
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -31,26 +39,26 @@ export function BetPanel({ minBet, maxBet, isBettingOpen, userBets, remainingCap
   const handleBet = async () => {
     setError('');
     setSuccess('');
-    if (choice === null) { setError('请先选择石头、布或剪刀'); return; }
-    if (!amount || amount === '0') { setError('请输入下注金额'); return; }
-    if (!account) { setError('请先连接钱包'); return; }
+    if (choice === null) { setError(t('bet.selectFirst')); return; }
+    if (!amount || amount === '0') { setError(t('bet.enterAmount')); return; }
+    if (!account) { setError(t('bet.connectWallet')); return; }
 
     const amountNum = Number(amount);
     if (isNaN(amountNum) || amountNum < minBetUsdc) {
-      setError(`最小下注 ${minBetUsdc} USDC`);
+      setError(t('bet.minBet', minBetUsdc));
       return;
     }
     if (!Number.isInteger(amountNum)) {
-      setError('下注金额必须为整数 USDC');
+      setError(t('bet.integerOnly'));
       return;
     }
     if (maxBetUsdc > 0 && amountNum > maxBetUsdc) {
-      setError(`最大下注 ${maxBetUsdc} USDC`);
+      setError(t('bet.maxBet', maxBetUsdc));
       return;
     }
     const remainingUsdc = Number(remainingCap) / USDC_UNIT;
     if (amountNum > remainingUsdc) {
-      setError(`超出本轮剩余额度，最多还能下 ${remainingUsdc} USDC`);
+      setError(t('bet.exceedCap', remainingUsdc));
       return;
     }
 
@@ -80,10 +88,10 @@ export function BetPanel({ minBet, maxBet, isBettingOpen, userBets, remainingCap
 
       // Get USDC coins and check balance
       const coins = await client.getCoins({ owner: account.address, coinType: USDC_TYPE });
-      if (!coins.data.length) { setError('没有 USDC 代币'); return; }
+      if (!coins.data.length) { setError(t('bet.noUsdc')); return; }
       const totalBalance = coins.data.reduce((sum, c) => sum + BigInt(c.balance), 0n);
       if (totalBalance < amountRaw) {
-        setError(`USDC 余额不足，当前 ${Number(totalBalance) / USDC_UNIT} USDC`);
+        setError(t('bet.insufficientBalance', Number(totalBalance) / USDC_UNIT));
         return;
       }
 
@@ -128,26 +136,26 @@ export function BetPanel({ minBet, maxBet, isBettingOpen, userBets, remainingCap
       }
 
       await signAndExecute({ transaction: tx });
-      setSuccess(`下注成功！${CHOICE_LABELS[choice]} ${amountNum} USDC`);
+      setSuccess(t('bet.success', choiceLabels[choice], amountNum));
       setAmount('');
       setChoice(null);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
-      setError(`下注失败: ${msg.slice(0, 100)}`);
+      setError(t('bet.fail', msg.slice(0, 100)));
     }
   };
 
   const choices = [
-    { value: 0, label: '🪨', name: '石头' },
-    { value: 1, label: '📄', name: '布' },
-    { value: 2, label: '✂️', name: '剪刀' },
+    { value: 0, label: '🪨', name: t('bet.rock') },
+    { value: 1, label: '📄', name: t('bet.paper') },
+    { value: 2, label: '✂️', name: t('bet.scissors') },
   ];
 
   const quickAmounts = [10, 50, 100];
 
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4 animate-slide-up">
-      <h3 className="mb-3 text-base font-semibold">选择出拳</h3>
+      <h3 className="mb-3 text-base font-semibold">{t('bet.selectMove')}</h3>
       <div className="mb-4 grid grid-cols-3 gap-3">
         {choices.map(c => {
           const locked = existingChoice !== null && existingChoice !== c.value;
@@ -172,11 +180,11 @@ export function BetPanel({ minBet, maxBet, isBettingOpen, userBets, remainingCap
       </div>
       {existingChoice !== null && (
         <div className="mb-3 text-xs text-[var(--yellow)]">
-          ⚠️ 本轮已下注 {CHOICE_LABELS[existingChoice]}，只能加注同一选择
+          ⚠️ {t('bet.alreadyBet', choiceLabels[existingChoice])}
         </div>
       )}
 
-      <h3 className="mb-2 text-base font-semibold">下注金额 (USDC)</h3>
+      <h3 className="mb-2 text-base font-semibold">{t('bet.amountLabel')}</h3>
       <div className="mb-3 flex gap-2">
         {quickAmounts.map(a => (
           <button
@@ -192,14 +200,14 @@ export function BetPanel({ minBet, maxBet, isBettingOpen, userBets, remainingCap
         type="number"
         value={amount}
         onChange={e => setAmount(e.target.value)}
-        placeholder={`最小 ${minBetUsdc} USDC`}
+        placeholder={t('bet.placeholder', minBetUsdc)}
         min={minBetUsdc}
         step={1}
         className="mb-4 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] px-3 py-2 text-[var(--text-primary)] outline-none focus:border-[var(--accent)] transition-colors"
       />
 
       {!account ? (
-        <div className="text-center text-sm text-[var(--text-secondary)]">请先连接钱包</div>
+        <div className="text-center text-sm text-[var(--text-secondary)]">{t('bet.connectFirst')}</div>
       ) : (
         <button
           onClick={handleBet}
@@ -209,7 +217,7 @@ export function BetPanel({ minBet, maxBet, isBettingOpen, userBets, remainingCap
               ? 'bg-blue-500 hover:bg-blue-600 active:scale-[0.98]'
               : 'bg-gray-400 cursor-not-allowed'}`}
         >
-          {isPending ? '提交中...' : !isBettingOpen ? '封盘中，等待开奖' : '确认下注'}
+          {isPending ? t('bet.submitting') : !isBettingOpen ? t('bet.closed') : t('bet.confirm')}
         </button>
       )}
 

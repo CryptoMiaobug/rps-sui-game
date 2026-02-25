@@ -4,8 +4,9 @@ import { useCurrentAccount, useSignAndExecuteTransaction } from '@mysten/dapp-ki
 import { Transaction } from '@mysten/sui/transactions';
 import { useEvents } from '../hooks/useEvents';
 import { useGameState } from '../hooks/useGameState';
-import { CHOICE_LABELS, PACKAGE_ID, GAME_ID, USDC_TYPE } from '../constants';
+import { PACKAGE_ID, GAME_ID, USDC_TYPE } from '../constants';
 import { formatUsdc, formatTimestamp } from '../utils';
+import { useLang } from '../i18n';
 import type { SuiEvent, EventId } from '@mysten/sui/jsonRpc';
 
 interface BetRow {
@@ -26,7 +27,14 @@ export function UserHistoryPage() {
   const { queryBetEvents, queryPayoutEvents, loading } = useEvents();
   const { gameState } = useGameState();
   const { mutateAsync: signAndExecute, isPending: claiming } = useSignAndExecuteTransaction();
+  const { t } = useLang();
   const [bets, setBets] = useState<BetRow[]>([]);
+
+  const choiceLabels: Record<number, string> = {
+    0: t('choice.rock'),
+    1: t('choice.paper'),
+    2: t('choice.scissors'),
+  };
   const [payouts, setPayouts] = useState<PayoutRow[]>([]);
   const [cursor, setCursor] = useState<EventId | null>(null);
   const [hasMore, setHasMore] = useState(true);
@@ -97,8 +105,8 @@ export function UserHistoryPage() {
   if (!account) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-8 text-center">
-        <p className="text-[var(--text-secondary)]">请先连接钱包</p>
-        <Link to="/" className="mt-4 inline-block text-[var(--accent)]">← 返回首页</Link>
+        <p className="text-[var(--text-secondary)]">{t('userHistory.connectWallet')}</p>
+        <Link to="/" className="mt-4 inline-block text-[var(--accent)]">{t('userHistory.backHome')}</Link>
       </div>
     );
   }
@@ -106,12 +114,12 @@ export function UserHistoryPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-4">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold">我的历史记录</h2>
-        <Link to="/" className="text-sm text-[var(--accent)]">← 返回</Link>
+        <h2 className="text-lg font-bold">{t('userHistory.title')}</h2>
+        <Link to="/" className="text-sm text-[var(--accent)]">{t('userHistory.back')}</Link>
       </div>
 
       {loading && bets.length === 0 && (
-        <div className="text-center text-[var(--text-secondary)]">加载中...</div>
+        <div className="text-center text-[var(--text-secondary)]">{t('userHistory.loading')}</div>
       )}
 
       <div className="space-y-3">
@@ -131,13 +139,13 @@ export function UserHistoryPage() {
                 </span>
                 <div className="flex items-center gap-2">
                   {hasPayout ? (
-                    <span className="text-xs text-[var(--green)]">✅ 已领取</span>
+                    <span className="text-xs text-[var(--green)]">{t('userHistory.claimed')}</span>
                   ) : claimState === 'claimed' ? (
-                    <span className="text-xs text-[var(--green)]">✅ 已领取</span>
+                    <span className="text-xs text-[var(--green)]">{t('userHistory.claimed')}</span>
                   ) : claimState === 'claiming' ? (
-                    <span className="text-xs text-[var(--yellow)]">领取中...</span>
+                    <span className="text-xs text-[var(--yellow)]">{t('userHistory.claiming')}</span>
                   ) : isCurrentRound ? (
-                    <span className="text-xs text-[var(--text-secondary)]">⏳ 等待开奖</span>
+                    <span className="text-xs text-[var(--text-secondary)]">{t('userHistory.waitingReveal')}</span>
                   ) : (
                     <button
                       onClick={() => handleClaim(roundMs)}
@@ -151,15 +159,15 @@ export function UserHistoryPage() {
               </div>
               <div className="flex flex-wrap gap-2 text-sm">
                 <span className="rounded bg-[var(--bg-secondary)] px-2 py-1">
-                  {CHOICE_LABELS[choice]} {formatUsdc(totalWagered)} USDC
+                  {choiceLabels[choice]} {formatUsdc(totalWagered)} USDC
                 </span>
               </div>
               <div className="mt-2 flex gap-4 text-xs text-[var(--text-secondary)]">
-                <span>下注: {formatUsdc(totalWagered)} USDC</span>
-                {hasPayout && <span>派奖: {formatUsdc(payout!)} USDC</span>}
+                <span>{t('userHistory.wager', formatUsdc(totalWagered))}</span>
+                {hasPayout && <span>{t('userHistory.payout', formatUsdc(payout!))}</span>}
                 {hasPayout && (
                   <span className={BigInt(payout!) >= totalWagered ? 'text-[var(--green)]' : 'text-[var(--red)]'}>
-                    盈亏: {BigInt(payout!) >= totalWagered ? '+' : ''}{formatUsdc(BigInt(payout!) - totalWagered)}
+                    {t('userHistory.pnl', `${BigInt(payout!) >= totalWagered ? '+' : ''}${formatUsdc(BigInt(payout!) - totalWagered)}`)}
                   </span>
                 )}
               </div>
@@ -174,7 +182,7 @@ export function UserHistoryPage() {
           disabled={loading}
           className="mt-4 w-full rounded-lg border border-[var(--border)] py-2 text-sm text-[var(--text-secondary)] hover:border-[var(--accent)] transition-colors"
         >
-          {loading ? '加载中...' : '加载更多'}
+          {loading ? t('userHistory.loading') : t('userHistory.loadMore')}
         </button>
       )}
     </div>
