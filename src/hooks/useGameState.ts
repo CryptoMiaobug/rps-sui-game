@@ -16,6 +16,7 @@ export interface GameState {
   vault: string;
   rounds_table_id: string;
   player_stats_table_id: string;
+  distribute_delay_ms: number;
 }
 
 function parseFields(fields: Record<string, unknown>): GameState {
@@ -48,6 +49,7 @@ function parseFields(fields: Record<string, unknown>): GameState {
     vault: vaultValue,
     rounds_table_id: String((roundsFields?.id as Record<string, unknown>)?.id ?? ''),
     player_stats_table_id: String((psFields?.id as Record<string, unknown>)?.id ?? ''),
+    distribute_delay_ms: Number(f.distribute_delay_ms ?? 86400000),
   };
 }
 
